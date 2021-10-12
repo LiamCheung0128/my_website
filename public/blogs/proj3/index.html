@@ -8,7 +8,7 @@
 	<meta name="description" content="Your description">
 	<meta name="author" content="Your name">
 	<meta name="generator" content="Hugo 0.88.1" />
-	<title>Analysis of movies- IMDB dataset &middot; Portfolio website for Liam Cheung</title>
+	<title>IMDB ratings: Differences between directors &middot; Portfolio website for Liam Cheung</title>
 	<!-- Stylesheets -->
 	
 	<link rel="stylesheet" href="https://liamcheung.netlify.app/css/main.css"/>
@@ -54,7 +54,7 @@
             
                 <li><a href="https://liamcheung.netlify.app/blogs/aboutme">About Me</a></li>
             
-                <li><a href="https://liamcheung.netlify.app/blogs/proj1">Pre-program Assignment</a></li>
+                <li><a href="https://liamcheung.netlify.app/blogs/proj1">Epidemic Simulation</a></li>
             
 
         </ul>
@@ -75,17 +75,55 @@
                     <section id="one">
                         <div class="inner">
                             <header class="major">
-                                <h1>Analysis of movies- IMDB dataset</h1>
+                                <h1>IMDB ratings: Differences between directors</h1>
                             </header>
                             
                             
-<script src="Analysis of movies- IMDB dataset_files/header-attrs/header-attrs.js"></script>
+<script src="IMDB ratings Differences between directors_files/header-attrs/header-attrs.js"></script>
 
 
-<div id="analysis-of-movies--imdb-dataset" class="section level1">
-<h1>Analysis of movies- IMDB dataset</h1>
-<p>We will look at a subset sample of movies, taken from the <a href="https://www.kaggle.com/carolzhangdc/imdb-5000-movie-dataset">Kaggle IMDB 5000 movie dataset</a></p>
-<pre class="r"><code>movies &lt;-read_csv(here::here(&quot;data&quot;,&quot;movies.csv&quot;)) 
+<p>Recall the IMBD ratings data. I would like you to explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. I have already calculated the confidence intervals for the mean ratings of these two directors and as you can see they overlap.</p>
+<p><img src="D:/syx/tmp/work/2021092601_r_shiny/test4/my_website/images/directors.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>First, I would like you to reproduce this graph. You may find <code>geom_errorbar()</code> and <code>geom_rect()</code> useful.</p>
+<pre class="r"><code># creat dateframe containing confidence intervals data for two directors
+director &lt;- c(&#39;Tim Burton&#39;,&#39;Steven Spielberg&#39;)
+meanrating &lt;- c(6.93,7.57)
+lower&lt;- c(6.53,7.27)
+upper&lt;- c(7.33,7.87)
+
+df_CIrating&lt;- data.frame(director,meanrating,lower,upper)
+
+# reproduce confidence intervals plot 
+ggplot(df_CIrating,aes(x=meanrating,y=factor(director,level = c(&#39;Tim Burton&#39;,&#39;Steven Spielberg&#39;)),color=director))+
+  geom_linerange(aes(xmin = lower, xmax = upper),width = 2)+
+  geom_pointrange(aes(xmin = lower, xmax = upper),size = 1)+
+  geom_errorbar(aes(xmin = lower, xmax = upper),size=2,width = 0.05)+
+  geom_text(aes(label=meanrating),hjust=0.5, vjust=-1,color=&quot;black&quot;,size=8,face=&quot;bold&quot;)+
+  geom_text(aes(label=lower,x=lower),hjust=0.5, vjust=-1,color=&quot;black&quot;,size=5)+
+  geom_text(aes(label=upper,x=upper),hjust=0.5, vjust=-1,color=&quot;black&quot;,size=5)+
+  theme_bw() + #delete background
+  xlab(&quot;Mean IMDB Rating&quot;) +
+  labs(title = &quot;Do Spielbarg and Burton have the same IMDB ratings?&quot;, 
+       subtitle = &quot;95% confidence intervals overlap&quot;) +
+  theme(legend.position = &quot;none&quot;,
+        axis.title.y = element_blank(),
+        axis.title.x = element_text(face = &quot;bold&quot;),
+        plot.title = element_text(face = &quot;bold&quot;),
+        plot.subtitle = element_text(face = &quot;bold&quot;))+
+  geom_rect(color= &quot;grey&quot;,fill = &quot;grey&quot;, alpha = 0.5, 
+    mapping = aes_string(x = &quot;meanrating&quot;, y = &quot;director&quot;), 
+    xmin = 7.27,
+    xmax = 7.33,
+    ymin = -Inf,
+    ymax = Inf)</code></pre>
+<p><img src="/blogs/IMDB%20ratings%20Differences%20between%20directors_files/figure-html/unnamed-chunk-1-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>In addition, you will run a hpothesis test. You should use both the <code>t.test</code> command and the <code>infer</code> package to simulate from a null distribution, where you assume zero difference between the two.</p>
+<blockquote>
+<p>Before anything, write down the null and alternative hypotheses, as well as the resulting test statistic and the associated t-stat or p-value. At the end of the day, what do you conclude?</p>
+</blockquote>
+<p><strong>Null hypotheses: The difference in mean IMDB ratings between Spielbarg and Burton is equal to zero</strong> <strong>Alternate hypotheses: The difference in mean IMDB ratings between Spielbarg and Burton is not equal to zero</strong> <strong>Test statistic for this hypotheses test should be the difference in sample means of ratings for two directors minus the term (μ1-μ2) which is equal to zero in this situation, divided by the standard deviation of the difference between the two sample means</strong> <strong>The associated t-stat = 2.70</strong> <strong>Since the t-stat 2.70 is much greater than 2, we reject the null hypotheses. In conclusion, the mean difference between two directors’ movie ratings is really different from zero and therefore there is a significant difference in IMDB rating for them</strong></p>
+<p>You can load the data and examine its structure</p>
+<pre class="r"><code>movies &lt;- read_csv(here::here(&quot;data&quot;, &quot;movies.csv&quot;))
 glimpse(movies)</code></pre>
 <pre><code>## Rows: 2,961
 ## Columns: 11
@@ -100,19 +138,9 @@ glimpse(movies)</code></pre>
 ## $ votes               &lt;dbl&gt; 886204, 793059, 418214, 995415, 1676169, 534658, 9~
 ## $ reviews             &lt;dbl&gt; 3777, 2843, 1934, 2425, 5312, 3917, 1752, 1752, 35~
 ## $ rating              &lt;dbl&gt; 7.9, 7.7, 7.0, 8.1, 9.0, 6.5, 8.7, 7.5, 8.5, 7.2, ~</code></pre>
-<p>Besides the obvious variables of <code>title</code>, <code>genre</code>, <code>director</code>, <code>year</code>, and <code>duration</code>, the rest of the variables are as follows:</p>
-<ul>
-<li><p><code>gross</code> : The gross earnings in the US box office, not adjusted for inflation</p></li>
-<li><p><code>budget</code>: The movie’s budget</p></li>
-<li><p><code>cast_facebook_likes</code>: the number of facebook likes cast memebrs received</p></li>
-<li><p><code>votes</code>: the number of people who voted for (or rated) the movie in IMDB</p></li>
-<li><p><code>reviews</code>: the number of reviews for that movie</p></li>
-<li><p><code>rating</code>: IMDB average rating</p></li>
-<li><p>Are there any missing values (NAs)? Are all entries distinct or are there duplicate entries?</p></li>
-</ul>
 <pre class="r"><code>skimr::skim(movies)</code></pre>
 <table>
-<caption><span id="tab:movies">Table 1: </span>Data summary</caption>
+<caption><span id="tab:load-movies-data">Table 1: </span>Data summary</caption>
 <tbody>
 <tr class="odd">
 <td align="left">Name</td>
@@ -336,188 +364,72 @@ glimpse(movies)</code></pre>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code># the number of double entries based on movies
-length(subset(movies$title,duplicated(movies$title)))</code></pre>
-<pre><code>## [1] 54</code></pre>
-<pre class="r"><code>movies_unique&lt;- movies %&gt;% distinct(title, year, .keep_all = TRUE)
-length(subset(movies_unique$title,duplicated(movies_unique$title)))</code></pre>
-<pre><code>## [1] 0</code></pre>
-<pre class="r"><code># View(movies_unique)</code></pre>
-<ul>
-<li>Produce a table with the count of movies by genre, ranked in descending order</li>
-</ul>
-<pre class="r"><code>library(tidytext)
-library(janeaustenr)
-library(dplyr)
-#https://dplyr.tidyverse.org/reference/count.html
-movies_unique %&gt;% 
-    count(genre,wt = NULL, sort = TRUE, name = NULL) #%&gt;% # group by genre</code></pre>
-<pre><code>## # A tibble: 17 x 2
-##    genre           n
-##    &lt;chr&gt;       &lt;int&gt;
-##  1 Comedy        844
-##  2 Action        719
-##  3 Drama         484
-##  4 Adventure     281
-##  5 Crime         198
-##  6 Biography     135
-##  7 Horror        128
-##  8 Animation      35
-##  9 Fantasy        26
-## 10 Documentary    25
-## 11 Mystery        15
-## 12 Sci-Fi          7
-## 13 Family          3
-## 14 Musical         2
-## 15 Romance         2
-## 16 Western         2
-## 17 Thriller        1</code></pre>
-<ul>
-<li>Produce a table with the average gross earning and budget (<code>gross</code> and <code>budget</code>) by genre. Calculate a variable <code>return_on_budget</code> which shows how many $ did a movie make at the box office for each $ of its budget. Ranked genres by this <code>return_on_budget</code> in descending order</li>
-</ul>
-<pre class="r"><code>tab1&lt;-movies_unique %&gt;% 
-    group_by(genre) %&gt;% # group by genre
-    summarise(gross = mean(gross, na.rm = TRUE), 
-              budget = mean(budget, na.rm = TRUE),
-              return_on_budget=gross/budget)
+<p>Your R code and analysis should go here. If you want to insert a blank chunk of R code you can just hit <code>Ctrl/Cmd+Alt+I</code></p>
+<pre class="r"><code>#Filter original data for two directors only, for t-test convenience
 
-arrange(tab1, desc(return_on_budget))</code></pre>
-<pre><code>## # A tibble: 17 x 4
-##    genre            gross    budget return_on_budget
-##    &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;            &lt;dbl&gt;
-##  1 Musical      92084000   3189500          28.9    
-##  2 Family      149160478. 14833333.         10.1    
-##  3 Western      20821884   3465000           6.01   
-##  4 Documentary  17353973.  5887852.          2.95   
-##  5 Horror       37782310. 13804379.          2.74   
-##  6 Fantasy      41902674. 18484615.          2.27   
-##  7 Comedy       42487808. 24458506.          1.74   
-##  8 Mystery      69117136. 41500000           1.67   
-##  9 Animation    98433792. 61701429.          1.60   
-## 10 Biography    45201805. 28543696.          1.58   
-## 11 Adventure    94350236. 64692313.          1.46   
-## 12 Drama        36754959. 25832605.          1.42   
-## 13 Crime        37601525. 26527405.          1.42   
-## 14 Romance      31264848. 25107500           1.25   
-## 15 Action       86270343. 70774558.          1.22   
-## 16 Sci-Fi       29788371. 27607143.          1.08   
-## 17 Thriller         2468    300000           0.00823</code></pre>
-<ul>
-<li>Produce a table that shows the top 15 directors who have created the highest gross revenue in the box office. Don’t just show the total gross amount, but also the mean, median, and standard deviation per director.</li>
-</ul>
-<pre class="r"><code>movies_unique %&gt;% 
-  group_by(director) %&gt;%
-  summarise(  tot=sum(gross,na.rm = TRUE),
-              avg = mean(gross, na.rm = TRUE), 
-              median = median(gross, na.rm = TRUE),
-              std=sd(gross))%&gt;%
-  slice_max(order_by =(tot), n=15)</code></pre>
-<pre><code>## # A tibble: 15 x 5
-##    director                 tot        avg     median        std
-##    &lt;chr&gt;                  &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
-##  1 Steven Spielberg  4014061704 174524422. 164435221  101421051.
-##  2 Michael Bay       2195443511 182953626. 168468240. 125789167.
-##  3 James Cameron     1909725910 318287652. 175562880. 309171337.
-##  4 Christopher Nolan 1813227576 226653447  196667606. 187224133.
-##  5 George Lucas      1741418480 348283696  380262555  146193880.
-##  6 Robert Zemeckis   1619309108 124562239. 100853835   91300279.
-##  7 Tim Burton        1557078534 111219895.  69791834   99304293.
-##  8 Sam Raimi         1443167519 180395940. 138480208  174705230.
-##  9 Clint Eastwood    1378321100  72543216.  46700000   75487408.
-## 10 Francis Lawrence  1358501971 271700394. 281666058  135437020.
-## 11 Ron Howard        1335988092 111332341  101587923   81933761.
-## 12 Gore Verbinski    1329600995 189942999. 123207194  154473822.
-## 13 Andrew Adamson    1137446920 284361730  279680930. 120895765.
-## 14 Shawn Levy        1129750988 102704635.  85463309   65484773.
-## 15 Ridley Scott      1128857598  80632686.  47775715   68812285.</code></pre>
-<ul>
-<li>Finally, ratings. Produce a table that describes how ratings are distributed by genre. We don’t want just the mean, but also, min, max, median, SD and some kind of a histogram or density graph that visually shows how ratings are distributed.</li>
-</ul>
-<pre class="r"><code>dat1&lt;-movies_unique %&gt;% 
-  group_by(genre) %&gt;%
-  summarise(  avg=mean(rating,na.rm = TRUE),
-              min = min(rating, na.rm = TRUE), 
-              max = max(rating, na.rm = TRUE),
-              median = median(rating, na.rm = TRUE),
-              std=sd(rating,na.rm = TRUE))
+movies_rating1 &lt;- movies%&gt;%
+  filter(director==c(&quot;Steven Spielberg&quot;))
 
-dat1</code></pre>
-<pre><code>## # A tibble: 17 x 6
-##    genre         avg   min   max median    std
-##    &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-##  1 Action       6.23   2.1   9     6.3   1.04 
-##  2 Adventure    6.51   2.3   8.6   6.6   1.11 
-##  3 Animation    6.65   4.5   8     6.9   0.968
-##  4 Biography    7.11   4.5   8.9   7.2   0.760
-##  5 Comedy       6.11   1.9   8.8   6.2   1.02 
-##  6 Crime        6.92   4.8   9.3   6.9   0.853
-##  7 Documentary  6.66   1.6   8.5   7.4   1.77 
-##  8 Drama        6.74   2.1   8.8   6.8   0.915
-##  9 Family       6.5    5.7   7.9   5.9   1.22 
-## 10 Fantasy      6.08   4.3   7.9   6.2   0.953
-## 11 Horror       5.79   3.6   8.5   5.85  0.987
-## 12 Musical      6.75   6.3   7.2   6.75  0.636
-## 13 Mystery      6.84   4.6   8.5   6.7   0.910
-## 14 Romance      6.65   6.2   7.1   6.65  0.636
-## 15 Sci-Fi       6.66   5     8.2   6.4   1.09 
-## 16 Thriller     4.8    4.8   4.8   4.8  NA    
-## 17 Western      5.7    4.1   7.3   5.7   2.26</code></pre>
-<pre class="r"><code>movies_unique %&gt;% 
-ggplot( aes(x=genre, y=rating))+
-  geom_boxplot()+
-  geom_jitter(width=0.15)+
-  theme(axis.text.x = element_text(angle = 90))+
-   theme_bw()+
-  labs(
-    title = &quot;Rating by genre&quot;,
-    subtitle = &quot;Documentary perform well&quot;,
-    x = &quot;genre&quot;,
-    y = NULL)</code></pre>
-<p><img src="/blogs/Analysis%20of%20movies-%20IMDB%20dataset_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
-<ul>
-<li>Examine the relationship between <code>gross</code> and <code>cast_facebook_likes</code>. Produce a scatterplot and write one sentence discussing whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office. What variable are you going to map to the Y- and X- axes?</li>
-</ul>
-<pre class="r"><code>movies_unique %&gt;% 
-  ggplot(aes(x = gross, y = cast_facebook_likes, gross)) +
-  geom_point(size=1, shape=1) +
-  theme_bw()+
-  labs(
-    title = &quot;Relationship between gross profit and cast_facebook_like&quot;,
-    subtitle = &quot;No relationship&quot;,
-    x = &quot;Gross earnings (US$)&quot;,
-    y = &quot;Facebook likes&quot;
-  )</code></pre>
-<p><img src="/blogs/Analysis%20of%20movies-%20IMDB%20dataset_files/figure-html/gross_on_fblikes-1.png" width="648" style="display: block; margin: auto;" />
-<strong>There is no relationship between the two variables</strong></p>
-<ul>
-<li>Examine the relationship between <code>gross</code> and <code>budget</code>. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.</li>
-</ul>
-<pre class="r"><code>movies_unique %&gt;% 
-  ggplot(aes(x = gross, y = budget, gross)) +
-  geom_jitter(width = 10000000, height = 10000000)+
-  labs(
-    title = &quot;Relationship between budget and cast_facebook_like&quot;,
-    subtitle = &quot;Positive relationship&quot;,
-    x = &quot;Gross earnings (US$)&quot;,
-    y = &quot;Budget&quot;
-  )</code></pre>
-<p><img src="/blogs/Analysis%20of%20movies-%20IMDB%20dataset_files/figure-html/gross_on_budget-1.png" width="648" style="display: block; margin: auto;" />
-<strong>There is a positive relationship between the two variables</strong></p>
-<ul>
-<li>Examine the relationship between <code>gross</code> and <code>rating</code>. Produce a scatterplot, faceted by <code>genre</code> and discuss whether IMDB ratings are likely to be a good predictor of how much money a movie will make at the box office. Is there anything strange in this dataset?</li>
-</ul>
-<pre class="r"><code>movies_unique %&gt;% 
-  ggplot(aes(x = gross, y = rating, gross)) +
-  geom_point(size=1, shape=1) +
-  theme_bw()+
-  labs(
-    title = &quot;Relationship between gross profit and cast_facebook_like&quot;,
-    subtitle = &quot;No relationship&quot;,
-    x = &quot;Gross earnings (US$)&quot;,
-    y = &quot;Facebook likes&quot;
-  )+facet_wrap(~genre, scales = &quot;free&quot;)</code></pre>
-<p><img src="/blogs/Analysis%20of%20movies-%20IMDB%20dataset_files/figure-html/gross_on_rating-1.png" width="648" style="display: block; margin: auto;" /></p>
-</div>
+movies_rating2 &lt;- movies%&gt;%
+  filter(director==c(&quot;Tim Burton&quot;))
+
+spielberg_burton &lt;- rbind(movies_rating1, movies_rating2)
+
+# Have a look at the statistics of two director rating samples
+mosaic::favstats(rating ~ director,data=spielberg_burton)</code></pre>
+<pre><code>##           director min   Q1 median   Q3 max mean    sd  n missing
+## 1 Steven Spielberg 6.2 7.20    7.6 8.00 8.9 7.57 0.695 23       0
+## 2       Tim Burton 5.7 6.45    7.0 7.53 8.0 6.93 0.749 16       0</code></pre>
+<pre class="r"><code># Run t-test
+t.test(rating ~ director,data=spielberg_burton)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  rating by director
+## t = 3, df = 31, p-value = 0.01
+## alternative hypothesis: true difference in means between group Steven Spielberg and group Tim Burton is not equal to 0
+## 95 percent confidence interval:
+##  0.16 1.13
+## sample estimates:
+## mean in group Steven Spielberg       mean in group Tim Burton 
+##                           7.57                           6.93</code></pre>
+<pre class="r"><code>#Filter original data for two directors only, for simulation 
+
+movies_rating1 &lt;- movies %&gt;%
+  filter(director == c(&quot;Steven Spielberg&quot;))
+
+movies_rating2 &lt;- movies %&gt;%
+  filter(director == c(&quot;Tim Burton&quot;))
+
+spielberg_burton &lt;- rbind(movies_rating1, movies_rating2)
+
+#Simulation
+set.seed(1234)
+
+ratings_in_null_world &lt;- spielberg_burton %&gt;%
+  # Specify the variable of interest
+  specify(rating ~ director) %&gt;%
+  
+  # Hypothesize a null of no (or zero) difference
+  hypothesize(null = &quot;independence&quot;) %&gt;%
+  
+  # Generate a bunch of simulated samples
+  generate(reps = 1000, type = &quot;permute&quot;) %&gt;%
+  
+  # Find the mean difference of each sample
+  calculate(stat = &quot;diff in means&quot;,
+            order = c(&quot;Steven Spielberg&quot;, &quot;Tim Burton&quot;))
+
+# Calculate the p-value
+ratings_in_null_world %&gt;%
+  get_pvalue(obs_stat = 0.64, direction = &quot;both&quot;)</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   p_value
+##     &lt;dbl&gt;
+## 1   0.004</code></pre>
+<pre class="r"><code>ratings_in_null_world %&gt;% visualize()</code></pre>
+<p><img src="/blogs/IMDB%20ratings%20Differences%20between%20directors_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><strong>Both t-test and simulation-based null distribution showed the null hypothesis should be rejected, implying there is a significant difference in IMDB rating for two directors</strong></p>
 
                         </div>
                     </section>
@@ -532,15 +444,7 @@ ggplot( aes(x=genre, y=rating))+
         <div class="inner">
             <ul class="icons">
                 
-                    <li><a href="https://www.twitter.com" class="icon alt fa-twitter" target="_blank"><span class="label">Twitter</span></a></li>
-                
-                    <li><a href="https://www.facebook.com" class="icon alt fa-facebook" target="_blank"><span class="label">Facebook</span></a></li>
-                
-                    <li><a href="https://www.instagram.com" class="icon alt fa-instagram" target="_blank"><span class="label">Instagram</span></a></li>
-                
                     <li><a href="https://github.com/LiamCheung0128" class="icon alt fa-github" target="_blank"><span class="label">GitHub</span></a></li>
-                
-                    <li><a href="https://www.linkedin.com/" class="icon alt fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
                 
             </ul>
             <ul class="copyright">

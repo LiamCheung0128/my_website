@@ -54,7 +54,7 @@
             
                 <li><a href="https://liamcheung.netlify.app/blogs/aboutme">About Me</a></li>
             
-                <li><a href="https://liamcheung.netlify.app/blogs/proj1">Pre-program Assignment</a></li>
+                <li><a href="https://liamcheung.netlify.app/blogs/proj1">Epidemic Simulation</a></li>
             
 
         </ul>
@@ -337,14 +337,14 @@ glimpse(yrbss)</code></pre>
 <pre><code>##   min   Q1 median   Q3 max mean   sd     n missing
 ##  29.9 56.2   64.4 76.2 181 67.9 16.9 12579    1004</code></pre>
 <p><em>There are 1004 missing weights. The average weight is 67.9</em></p>
-<pre class="r"><code>ggplot(yrbss, aes (x=weight))+
-  geom_boxplot()+
-  theme_minimal()+
+<pre class="r"><code>ggplot(yrbss, aes (x = weight)) +
+  geom_boxplot() +
+  theme_minimal() +
   NULL</code></pre>
 <p><img src="/blogs/Youth%20Risk%20Behavior%20Surveillance_files/figure-html/unnamed-chunk-2-1.png" width="648" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ggplot(yrbss, aes (x=weight))+
-  geom_density(alpha = 0.3)+
-  theme_minimal()+
+<pre class="r"><code>ggplot(yrbss, aes (x = weight)) +
+  geom_density(alpha = 0.3) +
+  theme_minimal() +
   NULL</code></pre>
 <p><img src="/blogs/Youth%20Risk%20Behavior%20Surveillance_files/figure-html/unnamed-chunk-2-2.png" width="648" style="display: block; margin: auto;" /></p>
 <p><em>Most weight values are reasonable, between 60 and 75. however, there are some outliers, with some children weighting more than 100 and even more than 150</em></p>
@@ -352,16 +352,16 @@ glimpse(yrbss)</code></pre>
 <pre class="r"><code>#we first drop all missing values in the dataset
 yrbss &lt;- na.omit(yrbss)
 #we try to see if there is a correlation between weight and physical activity
-yrbss %&gt;% 
-  select(physically_active_7d, weight) %&gt;% 
+yrbss %&gt;%
+  select(physically_active_7d, weight) %&gt;%
   cor()</code></pre>
 <pre><code>##                      physically_active_7d weight
 ## physically_active_7d               1.0000 0.0403
 ## weight                             0.0403 1.0000</code></pre>
 <p><em>Surprisingly enough, there is no negative correlation. We would’ve expected that the more the physical activity increases, the more weight decreases</em></p>
-<pre class="r"><code>weight_by_activity &lt;- yrbss %&gt;% 
-  group_by(physically_active_7d) %&gt;% 
-  summarise(meanweight= mean(weight)) 
+<pre class="r"><code>weight_by_activity &lt;- yrbss %&gt;%
+  group_by(physically_active_7d) %&gt;%
+  summarise(meanweight = mean(weight))
 weight_by_activity</code></pre>
 <pre><code>## # A tibble: 8 x 2
 ##   physically_active_7d meanweight
@@ -375,39 +375,44 @@ weight_by_activity</code></pre>
 ## 7                    6       68.4
 ## 8                    7       69.0</code></pre>
 <p><em>Indeed, the average eight tends to increase as the level of physical activity increases</em></p>
-<pre class="r"><code>plot2&lt;- ggplot(yrbss, aes(x = weight , y = physically_active_7d)) +
-  geom_point() + geom_smooth(method = &quot;lm&quot;) 
+<pre class="r"><code>plot2 &lt;- ggplot(yrbss, aes(x = weight , y = physically_active_7d)) +
+  geom_point() + geom_smooth(method = &quot;lm&quot;)
 plot2</code></pre>
 <p><img src="/blogs/Youth%20Risk%20Behavior%20Surveillance_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
-<p><em>Surprisingly enough, the correlation is positive. Although it is counter intuitive, high weights dont necessarily mean high body fat percentage. Maybe, those who are more physically active have lower body fat but more muscles and therefore wieght more?</em>
-Let’s create a new variable in the dataframe <code>yrbss</code>, called <code>physical_3plus</code> , which will be <code>yes</code> if they are physically active for at least 3 days a week, and <code>no</code> otherwise. You may also want to calculate the number and % of those who are and are not active for more than 3 days. RUse the <code>count()</code> function and see if you get the same results as <code>group_by()... summarise()</code></p>
-<pre class="r"><code>yrbss &lt;- yrbss %&gt;% 
-  mutate(physical_3plus = case_when(
-    physically_active_7d &gt;2 ~ &quot;yes&quot;,
-    physically_active_7d &lt;2 ~ &quot;no&quot;,
-  ))
+<pre class="r"><code># We then plot height vs weight using the level of physical activity as categorical variable
+ggplot(yrbss, aes(x = weight, y = height, colour = physically_active_7d)) +
+  geom_point() +
+  theme_bw() +
+  labs(y = &quot;height&quot;,
+       x = &quot;weight&quot;,
+       title = &quot;Level of activity&quot;)</code></pre>
+<p><img src="/blogs/Youth%20Risk%20Behavior%20Surveillance_files/figure-html/unnamed-chunk-5-2.png" width="648" style="display: block; margin: auto;" /></p>
+<p><em>Surprisingly enough, the correlation in the first graph seems positive. Although it is counter intuitive, high weights don’t necessarily mean high body fat percentage. Maybe, those who are more physically active have lower body fat but more muscles and therefore weigh more?. Even by considering the height in the second graph, so by “adjusting for the body fat”, it’s not always the case that short people that have high weight are less physical active. However, we tend to see mainly dark data points in the bottom right of the graph. Similarly, if you are tall with a low weight you tend to practice quite a lot. It would be interesting to overlap the body mass index to really see if there is a correlation between overweight people and lower physical activity.</em></p>
+<p>Let’s create a new variable in the dataframe <code>yrbss</code>, called <code>physical_3plus</code> , which will be <code>yes</code> if they are physically active for at least 3 days a week, and <code>no</code> otherwise. You may also want to calculate the number and % of those who are and are not active for more than 3 days. RUse the <code>count()</code> function and see if you get the same results as <code>group_by()... summarise()</code></p>
+<pre class="r"><code>yrbss &lt;- yrbss %&gt;%
+  mutate(physical_3plus = case_when(physically_active_7d &gt; 2 ~ &quot;yes&quot;,
+                                    physically_active_7d &lt; 2 ~ &quot;no&quot;,))
 
-yrbss %&gt;% 
-  count(physical_3plus) %&gt;% 
-  mutate(proportions = n/sum(n))</code></pre>
+yrbss %&gt;%
+  count(physical_3plus) %&gt;%
+  mutate(proportions = n / sum(n))</code></pre>
 <pre><code>## # A tibble: 3 x 3
 ##   physical_3plus     n proportions
 ##   &lt;chr&gt;          &lt;int&gt;       &lt;dbl&gt;
 ## 1 no              1885      0.226 
 ## 2 yes             5695      0.682 
 ## 3 &lt;NA&gt;             771      0.0923</code></pre>
-<pre class="r"><code>yrbss %&gt;% 
-  group_by(physical_3plus) %&gt;% 
-  summarise(n = n()) %&gt;% 
-  mutate(proportions = n/sum(n))</code></pre>
+<pre class="r"><code>yrbss %&gt;%
+  group_by(physical_3plus) %&gt;%
+  summarise(n = n()) %&gt;%
+  mutate(proportions = n / sum(n))</code></pre>
 <pre><code>## # A tibble: 3 x 3
 ##   physical_3plus     n proportions
 ##   &lt;chr&gt;          &lt;int&gt;       &lt;dbl&gt;
 ## 1 no              1885      0.226 
 ## 2 yes             5695      0.682 
 ## 3 &lt;NA&gt;             771      0.0923</code></pre>
-<p><em>We get the same results using both functions</em>
-Can you provide a 95% confidence interval for the population proportion of high schools that are <em>NOT</em> active 3 or more days per week?</p>
+<p><em>We get the same results using both functions</em> Can you provide a 95% confidence interval for the population proportion of high schools that are <em>NOT</em> active 3 or more days per week?</p>
 <pre class="r"><code>prop.test(1885,7580)</code></pre>
 <pre><code>## 
 ##  1-sample proportions test with continuity correction
@@ -421,21 +426,22 @@ Can you provide a 95% confidence interval for the population proportion of high 
 ##     p 
 ## 0.249</code></pre>
 <p>Make a boxplot of <code>physical_3plus</code> vs. <code>weight</code>. Is there a relationship between these two variables? What did you expect and why?</p>
-<pre class="r"><code>ggplot(yrbss, aes (x=weight, y = physical_3plus))+
-  geom_boxplot()+
-  theme_minimal()+
+<pre class="r"><code>ggplot(yrbss, aes (x = weight, y = physical_3plus)) +
+  geom_boxplot() +
+  theme_minimal() +
   NULL</code></pre>
 <p><img src="/blogs/Youth%20Risk%20Behavior%20Surveillance_files/figure-html/boxplot-1.png" width="648" style="display: block; margin: auto;" /></p>
-<p><em>As seen before, there is s slight positvie relation between weight and physical activity. We didnt expect this as it is intuitive to say that the most one is physically active the less he/she weights.</em>
-## Confidence Interval</p>
+<p><em>As seen before, there is s slight positvie relation between weight and physical activity. We didnt expect this as it is intuitive to say that the most one is physically active the less he/she weights.</em> ## Confidence Interval</p>
 <p>Boxplots show how the medians of the two distributions compare, but we can also compare the means of the distributions using either a confidence interval or a hypothesis test. Note that when we calculate the mean, SD, etc. weight in these groups using the mean function, we must ignore any missing values by setting the <code>na.rm = TRUE</code>.</p>
-<pre class="r"><code>yrbss %&gt;% 
-  group_by(physical_3plus) %&gt;% 
+<pre class="r"><code>yrbss %&gt;%
+  group_by(physical_3plus) %&gt;%
   summarise(n = n(),
-            mean_weight = mean(weight, na.rm = TRUE))%&gt;% 
-  mutate(se = sd(mean_weight, na.rm = TRUE)/sqrt(n),
-         lower = mean_weight - 1.96*se,
-         upper = mean_weight + 1.96*se)</code></pre>
+            mean_weight = mean(weight, na.rm = TRUE)) %&gt;%
+  mutate(
+    se = sd(mean_weight, na.rm = TRUE) / sqrt(n),
+    lower = mean_weight - 1.96 * se,
+    upper = mean_weight + 1.96 * se
+  )</code></pre>
 <pre><code>## # A tibble: 3 x 6
 ##   physical_3plus     n mean_weight     se lower upper
 ##   &lt;chr&gt;          &lt;int&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
@@ -510,6 +516,7 @@ Can you provide a 95% confidence interval for the population proportion of high 
 ##   p_value
 ##     &lt;dbl&gt;
 ## 1       0</code></pre>
+<p>This the standard workflow for performing hypothesis tests.</p>
 </div>
 
                         </div>
@@ -525,15 +532,7 @@ Can you provide a 95% confidence interval for the population proportion of high 
         <div class="inner">
             <ul class="icons">
                 
-                    <li><a href="https://www.twitter.com" class="icon alt fa-twitter" target="_blank"><span class="label">Twitter</span></a></li>
-                
-                    <li><a href="https://www.facebook.com" class="icon alt fa-facebook" target="_blank"><span class="label">Facebook</span></a></li>
-                
-                    <li><a href="https://www.instagram.com" class="icon alt fa-instagram" target="_blank"><span class="label">Instagram</span></a></li>
-                
                     <li><a href="https://github.com/LiamCheung0128" class="icon alt fa-github" target="_blank"><span class="label">GitHub</span></a></li>
-                
-                    <li><a href="https://www.linkedin.com/" class="icon alt fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
                 
             </ul>
             <ul class="copyright">

@@ -36,7 +36,7 @@ I was an apprentice at Adelaide Symphony Orchestra, where I was promoted to gues
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://liamcheung.netlify.app/blogs/proj3/</guid>
-      <description>Analysis of movies- IMDB datasetWe will look at a subset sample of movies, taken from the Kaggle IMDB 5000 movie dataset
+      <description>We will look at a subset sample of movies, taken from the Kaggle IMDB 5000 movie dataset
 movies &amp;lt;-read_csv(here::here(&amp;quot;data&amp;quot;,&amp;quot;movies.csv&amp;quot;)) glimpse(movies)## Rows: 2,961## Columns: 11## $ title &amp;lt;chr&amp;gt; &amp;quot;Avatar&amp;quot;, &amp;quot;Titanic&amp;quot;, &amp;quot;Jurassic World&amp;quot;, &amp;quot;The Avenge~## $ genre &amp;lt;chr&amp;gt; &amp;quot;Action&amp;quot;, &amp;quot;Drama&amp;quot;, &amp;quot;Action&amp;quot;, &amp;quot;Action&amp;quot;, &amp;quot;Action&amp;quot;, &amp;quot;~## $ director &amp;lt;chr&amp;gt; &amp;quot;James Cameron&amp;quot;, &amp;quot;James Cameron&amp;quot;, &amp;quot;Colin Trevorrow~## $ year &amp;lt;dbl&amp;gt; 2009, 1997, 2015, 2012, 2008, 1999, 1977, 2015, 20~## $ duration &amp;lt;dbl&amp;gt; 178, 194, 124, 173, 152, 136, 125, 141, 164, 93, 1~## $ gross &amp;lt;dbl&amp;gt; 7.</description>
     </item>
     
@@ -75,6 +75,26 @@ healthy &amp;lt;- 0infected &amp;lt;- 1dead &amp;lt;- 2Number of people encou
       <guid>https://liamcheung.netlify.app/blogs/proj4/</guid>
       <description>At the risk of oversimplifying things, the main components of gross domestic product, GDP are personal consumption (C), business investment (I), government spending (G) and net exports (exports - imports). You can read more about GDP and the different approaches in calculating at the Wikipedia GDP page.
 The GDP data we will look at is from the United Nations’ National Accounts Main Aggregates Database, which contains estimates of total GDP and its components for all countries from 1970 to today.</description>
+    </item>
+    
+    <item>
+      <title>IMDB ratings: Differences between directors</title>
+      <link>https://liamcheung.netlify.app/blogs/proj3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://liamcheung.netlify.app/blogs/proj3/</guid>
+      <description>Recall the IMBD ratings data. I would like you to explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. I have already calculated the confidence intervals for the mean ratings of these two directors and as you can see they overlap.
+First, I would like you to reproduce this graph. You may find geom_errorbar() and geom_rect() useful.
+# creat dateframe containing confidence intervals data for two directorsdirector &amp;lt;- c(&amp;#39;Tim Burton&amp;#39;,&amp;#39;Steven Spielberg&amp;#39;)meanrating &amp;lt;- c(6.</description>
+    </item>
+    
+    <item>
+      <title>Omega Group plc- Pay Discrimination</title>
+      <link>https://liamcheung.netlify.app/blogs/proj4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://liamcheung.netlify.app/blogs/proj4/</guid>
+      <description>At the last board meeting of Omega Group Plc., the headquarters of a large multinational company, the issue was raised that women were being discriminated in the company, in the sense that the salaries were not the same for male and female executives. A quick analysis of a sample of 50 employees (of which 24 men and 26 women) revealed that the average salary for men was about 8,700 higher than for women.</description>
     </item>
     
     <item>
