@@ -60,6 +60,12 @@ params:
         url: blogs/aboutme
       - name: Epidemic Simulation
         url: blogs/proj1
+      - name: Youth Risk Behavior Surveillance
+        url: blogs/proj2
+      - name: IMDB ratings Differences between directors
+        url: blogs/proj3
+      - name: Omega Group plc- Pay Discrimination
+        url: blogs/proj4
     menu: Menu
     subtitle: 
     title: Home
